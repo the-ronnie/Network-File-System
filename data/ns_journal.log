@@ -1,0 +1,9 @@
+[1763535260] CREATE test_file_1763535259_1.txt 1 testuser
+[1763535261] CREATE test_file_1763535259_2.txt 0 testuser
+[1763535264] MOVE test_file_1763535259_1.txt test_folder1 testuser
+[1763535265] MOVE test_file_1763535259_2.txt test_folder1/subfolder testuser
+[1763535273] CREATE ckpt_test_1763535259.txt 1 testuser
+[1763660111] CREATE 5.txt 0 RON
+[1763660156] CREATEFOLDER HI RON
+[1763660178] MOVE 5.txt HI RON
+[1763660375] MOVE 5.txt HI RON
