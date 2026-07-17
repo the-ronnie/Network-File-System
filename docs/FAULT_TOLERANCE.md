@@ -1,15 +1,14 @@
-# Implementation Summary: Access Requests & Fault Tolerance
+# Fault Tolerance & Access Requests — Implementation Notes
 
 ## Overview
-Successfully implemented two advanced features for the Network File System:
-1. **Requesting Access System** (5 bonus marks)
-2. **Fault Tolerance with Replication** (15 bonus marks)
+This document covers two advanced subsystems of the Network File System:
+1. **Access Request System** — a request/approve workflow for file permissions
+2. **Fault Tolerance with Replication** — heartbeat failure detection, read failover, and recovery sync
 
-Total: **20 bonus marks**
 
 ---
 
-## Feature 1: Requesting Access (5 marks) ✅
+## Feature 1: Access Request System
 
 ### Implementation Details
 
@@ -55,11 +54,11 @@ struct FileInfo {
 - Access control - Integration with existing `has_file_access()` function
 
 **Testing:**
-See `QUICK_TEST.md` for step-by-step test procedure.
+See [TESTING.md](TESTING.md) for the step-by-step test procedure.
 
 ---
 
-## Feature 2: Fault Tolerance & Replication (15 marks) ✅
+## Feature 2: Fault Tolerance & Replication
 
 ### Architecture Changes
 
@@ -81,7 +80,7 @@ struct FileInfo {
 };
 ```
 
-### 2.1 Replication Strategy ✅
+### 2.1 Replication Strategy
 
 **Implementation:**
 - When file is created, NS replicates it to ALL available Storage Servers
@@ -112,7 +111,7 @@ struct FileInfo {
 - `REPLICATE` handler - fetches file from source SS and stores locally
 - `GET_FILE_CONTENT` handler - serves file content for replication
 
-### 2.2 Failure Detection ✅
+### 2.2 Failure Detection
 
 **Heartbeat Mechanism:**
 ```c
@@ -165,7 +164,7 @@ void* heartbeat_monitor_thread(void* arg) {
 ✓ Storage Server 0 (10.85.162.202:9002) came back ONLINE
 ```
 
-### 2.3 Failover for Read Operations ✅
+### 2.3 Failover for Read Operations
 
 **Implementation in READ Command:**
 ```c
@@ -200,7 +199,7 @@ if (selected_ss != ss_index) {
 3. READ command finds SS0 down, uses SS1
 4. Client successfully reads from SS1
 
-### 2.4 SS Recovery & Synchronization ✅
+### 2.4 SS Recovery & Synchronization
 
 **Implementation:**
 When an SS connects/reconnects, NS automatically syncs all files:
@@ -362,19 +361,10 @@ if (ss_count > 1) {
 ✅ SS Recovery - Syncs missing files when SS reconnects
 
 ### Testing Status:
-- ✅ Access Requests - Tested and working (see QUICK_TEST.md)
+- ✅ Access Requests - Tested and working (see [TESTING.md](TESTING.md))
 - ⚠️ Fault Tolerance - Implementation complete, requires 2 SS instances for full test
-- 📝 Documentation - TEST_FAULT_TOLERANCE.md, QUICK_TEST.md provided
+- 📝 Documentation - see [TESTING.md](TESTING.md)
 
-### Marks Breakdown:
-- **5 marks** - Access Request System (REQACCESS, SHOW_REQUESTS, APPROVE_REQ)
-- **15 marks** - Fault Tolerance:
-  - Replication: 5 marks
-  - Failure Detection: 3 marks  
-  - SS Recovery: 4 marks
-  - Read Failover: 3 marks
-
-**Total: 20 bonus marks**
 
 The implementation demonstrates advanced distributed systems concepts including:
 - Replication strategies

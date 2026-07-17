@@ -1,5 +1,5 @@
 # Technical Implementation Guide - Distributed Document Collaboration System
-## For Viva Voce Examination
+A deep dive into the architecture, data structures, synchronization mechanisms, and design decisions behind the system.
 
 ---
 
@@ -59,7 +59,7 @@ struct StorageServer {
 
 **Why This Design?**
 - Separate ports for NS and Client connections allow concurrent operations
-- `is_alive` flag enables fault tolerance (bonus feature)
+- `is_alive` flag enables fault tolerance
 - `ss_id` provides unique identification for logging and debugging
 
 ---
@@ -92,12 +92,12 @@ struct FileInfo {
 **Purpose**: Complete metadata for each file/folder in the system.
 
 **Why This Design?**
-- **full_path**: Supports hierarchical folder structure (bonus feature)
+- **full_path**: Supports hierarchical folder structure
 - **is_folder**: Distinguishes folders from files without separate structures
 - **Access Control Lists**: Array-based for simple permission checking
 - **Replicas**: Supports fault tolerance through replication
 - **Timestamps**: Required for INFO command and auditing
-- **Access Requests**: Supports bonus feature for requesting file access
+- **Access Requests**: Supports the access-request workflow
 
 ---
 
@@ -212,7 +212,7 @@ int checkpoint_count = 0;
 pthread_mutex_t checkpoint_mutex = PTHREAD_MUTEX_INITIALIZER;
 ```
 
-**Purpose**: Track all file checkpoints for version control (bonus feature).
+**Purpose**: Track all file checkpoints for version control.
 
 **Why This Design?**
 - **Tag-based**: Users create meaningful labels ("final_draft", "v2.1")
@@ -317,7 +317,7 @@ pthread_mutex_unlock(&lock_table_mutex);
 
 ## 4. Feature-wise Implementation
 
-### 4.1 VIEW Command (10 marks)
+### 4.1 VIEW Command
 **Location**: `src/nameserver/nameserver.c` (Lines 1036-1142)
 
 #### Implementation Flow:
@@ -352,7 +352,7 @@ int has_file_access(struct FileInfo* file, const char* username) {
 
 ---
 
-### 4.2 CREATE Command (10 marks)
+### 4.2 CREATE Command
 **Location**: `src/nameserver/nameserver.c` (Lines 1144-1229)
 
 #### Implementation Flow:
@@ -391,7 +391,7 @@ last_ss_index = next_ss_index;
 
 ---
 
-### 4.3 WRITE Command (30 marks)
+### 4.3 WRITE Command
 **Location**: Client: `client.c` (Lines 199-341), SS: `storageserver.c` (Lines 598-723)
 
 #### Implementation Flow:
@@ -487,7 +487,7 @@ void update_sentence(char* filename, int sent_num, int word_index, char* new_con
 
 ---
 
-### 4.4 UNDO Command (15 marks)
+### 4.4 UNDO Command
 **Location**: `src/storageserver/storageserver.c` (Lines 887-969)
 
 #### Implementation:
@@ -526,7 +526,7 @@ void handle_undo(char* filename) {
 
 ---
 
-### 4.5 STREAM Command (15 marks)
+### 4.5 STREAM Command
 **Location**: `src/storageserver/storageserver.c` (Lines 971-1068)
 
 #### Implementation:
@@ -575,7 +575,7 @@ void handle_stream(int client_fd, char* filename) {
 
 ---
 
-### 4.6 EXEC Command (15 marks)
+### 4.6 EXEC Command
 **Location**: `src/nameserver/nameserver.c` (Lines 1540-1627)
 
 #### Implementation Flow:
@@ -634,7 +634,7 @@ void handle_exec(int client_fd, char* filename, char* username) {
 
 ---
 
-### 4.7 Access Control (15 marks)
+### 4.7 Access Control
 **Location**: `src/nameserver/nameserver.c` (Lines 1629-1820)
 
 #### Data Structure:
@@ -1200,15 +1200,15 @@ printf("[%s] Client %s: Command=%s File=%s Result=%s\n",
 
 ---
 
-## 10. Bonus Features Summary
+## 10. Advanced Features Summary
 
-| Feature | Points | Implementation Location | Key Technique |
-|---------|--------|------------------------|---------------|
-| **Hierarchical Folders** | 10 | nameserver.c:1072-1968 | Path-based (full_path field), Trie integration |
-| **Checkpoints** | 15 | storageserver.c:728-1186 | File-based (.ckpt), tag system, metadata registry |
-| **Fault Tolerance** | 15 | nameserver.c:212-244 | Replica tracking, heartbeat detection, failover |
-| **Access Requests** | 5 | nameserver.c (AccessRequest struct) | Queue-based pending requests |
-| **Unique Factor** | 5 | STREAM, EXEC, Sentence locking | Word-by-word streaming, remote execution |
+| Feature | Implementation Location | Key Technique |
+|---------|------------------------|---------------|
+| **Hierarchical Folders** | nameserver.c:1072-1968 | Path-based (full_path field), Trie integration |
+| **Checkpoints** | storageserver.c:728-1186 | File-based (.ckpt), tag system, metadata registry |
+| **Fault Tolerance** | nameserver.c:212-244 | Replica tracking, heartbeat detection, failover |
+| **Access Requests** | nameserver.c (AccessRequest struct) | Queue-based pending requests |
+| **Unique Factor** | STREAM, EXEC, Sentence locking | Word-by-word streaming, remote execution |
 
 ---
 
@@ -1230,7 +1230,7 @@ Where:
 
 ---
 
-## 12. Common Viva Questions & Answers
+## 12. Design Rationale: Questions & Answers
 
 ### Q1: Why use Trie instead of Hash Table for file search?
 **Answer**: 
@@ -1352,7 +1352,7 @@ This implementation demonstrates:
 
 **Total Lines of Code**: ~5000+ lines across nameserver, storageserver, client
 
-**Key Takeaways for Viva**:
+**Key Takeaways**:
 1. Understand **why** each design decision was made (trade-offs)
 2. Know **where** each feature is implemented (line numbers)
 3. Explain **how** synchronization prevents race conditions
@@ -1362,5 +1362,5 @@ This implementation demonstrates:
 ---
 
 **Document Created**: December 4, 2025  
-**Purpose**: Viva Voce Preparation - Technical Deep Dive  
+**Purpose**: Technical Deep Dive  
 **Coverage**: Complete implementation with functions, data structures, mutexes, and design rationale

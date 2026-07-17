@@ -1,0 +1,18 @@
+# Build artifacts
+bin/
+obj/
+*.o
+
+# Runtime data
+data/
+logs/
+storage/
+*.bak
+*.ckpt
+ns_journal.log
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
